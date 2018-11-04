@@ -13,8 +13,7 @@ RenovateVersion      | renovate version to use                        | latest|
 RenovateFlags        | see `--help` for details about supported flags   ||
 RenovatePlatform     | the platform, requires `GitHubToken` or `GitLabToken` ||
 RenovateSchedule     | schedule the renovate [ScheduleExpressions] |`cron(45 23 ? * 1-5 *)`|
-GitHubToken          | token used when platform is `github`          | NOT_SET|
-GitLabToken          | token used when platform is `gitlab`          | NOT_SET|
+RenovatePlatformToken| token for the platform (`github` or `gitlab`)         ||
 |||
 TimeoutInMinutes     | timeout for renovate build                    | `10`   |
 ComputerType| computer to to use with `renovate`| `BUILD_GENERAL1_SMALL`       |

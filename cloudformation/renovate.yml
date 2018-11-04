@@ -30,6 +30,11 @@ Parameters:
       - github
       - gitlab
 
+  RenovatePlatformToken:
+    Type: String
+    MinLength: 1
+    NoEcho: true
+
   Image:
     Type: String
     Default: aws/codebuild/nodejs:10.1.0
@@ -42,36 +47,23 @@ Parameters:
     Type: Number
     Default: 10
 
-  GitHubToken:
-    Type: String
-    Default: NOT_SET
-    MinLength: 1
-    NoEcho: true
-
-  GitLabToken:
-    Description: |
-    Type: String
-    Default: NOT_SET
-    MinLength: 1
-    NoEcho: true
-
 Conditions:
   HasRenovateSchedule: {"Fn::Not": [{"Fn::Equals": ["", {"Ref": "RenovateSchedule"}]}]}
 
-Resources:
-  RenovateGitHubToken:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Type: String
-      Name: /renovate-aws/GITHUB_TOKEN
-      Value: !Ref GitHubToken
+Mappings:
+  PlatformToEnv:
+    gitlab:
+      Value: "    GITLAB_TOKEN"
+    github:
+      Value: "    GITHUB_TOKEN"
 
-  RenovateGitLabToken:
+Resources:
+  RenovatePlatformTokenParameter:
     Type: AWS::SSM::Parameter
     Properties:
       Type: String
-      Name: /renovate-aws/GITLAB_TOKEN
-      Value: !Ref GitLabToken
+      Name: /renovate-aws/platform_token
+      Value: !Ref RenovatePlatformToken
 
   RenovateRole:
     Type: AWS::IAM::Role
@@ -120,7 +112,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/Renovate-*"
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:project/Renovate-*"
 
   RenovateCronRule:
     Type: AWS::Events::Rule
@@ -155,25 +147,33 @@ Resources:
             Value: !Ref RenovatePlatform
       Source:
         Type: NO_SOURCE
-        BuildSpec: |
-          version: 0.2
-          env:
-            variables:
-              CI: "1"
-            parameter-store:
-              GITHUB_TOKEN: /renovate-aws/GITHUB_TOKEN
-              GITLAB_TOKEN: /renovate-aws/GITLAB_TOKEN
-          phases:
-            install:
-              commands:
-                - npm install renovate@${RENOVATE_VERSION}
-                - "$(npm bin)/renovate --version"
-            build:
-              commands:
-                - $(npm bin)/renovate ${RENOVATE_FLAGS}
-          cache:
-            paths:
-              - "node_modules/**/*"
+        BuildSpec: !Join
+          - ""
+          -
+            - |
+                version: 0.2
+                env:
+                  variables:
+                    CI: "1"
+                  parameter-store:
+            - !Join
+              - ""
+              -
+                - !Join
+                  - ": "
+                  -
+                    - !FindInMap [ PlatformToEnv, !Ref "RenovatePlatform", Value ]
+                    - /renovate-aws/platform_token
+                - "\n"
+            - |
+                phases:
+                  install:
+                    commands:
+                      - npm install renovate@${RENOVATE_VERSION}
+                      - "$(npm bin)/renovate --version"
+                  build:
+                    commands:
+                      - $(npm bin)/renovate ${RENOVATE_FLAGS}
       TimeoutInMinutes: !Ref TimeoutInMinutes
 
 Outputs:
