@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 Description: |
-  AWS resources for Renovate
+  Run Rennovate with AWS CodeBuild.
 
 Parameters:
   RenovateVersion:
@@ -23,10 +23,6 @@ Parameters:
       - github
       - gitlab
 
-  RenovateConfigLocation:
-    Type: String
-    Default: renovate-aws/config/latest/config.zip
-
   Image:
     Type: String
     Default: aws/codebuild/nodejs:10.1.0
@@ -34,10 +30,6 @@ Parameters:
   ComputerType:
     Type: String
     Default: BUILD_GENERAL1_SMALL
-
-  BuildSpec:
-    Type: String
-    Default: buildspec.yml
 
   TimeoutInMinutes:
     Type: Number
@@ -122,7 +114,24 @@ Resources:
           - Name: RENOVATE_PLATFORM
             Value: !Ref RenovatePlatform
       Source:
-        Location: !Ref RenovateConfigLocation
-        Type: S3
-        BuildSpec: !Ref BuildSpec
+        Type: NO_SOURCE
+        BuildSpec: |
+          version: 0.2
+          env:
+            variables:
+              CI: "1"
+            parameter-store:
+              GITHUB_TOKEN: /renovate-aws/GITHUB_TOKEN
+              GITLAB_TOKEN: /renovate-aws/GITLAB_TOKEN
+          phases:
+            install:
+              commands:
+                - npm install renovate@${RENOVATE_VERSION}
+                - "$(npm bin)/renovate --version"
+            build:
+              commands:
+                - $(npm bin)/renovate ${RENOVATE_FLAGS}
+          cache:
+            paths:
+              - "node_modules/**/*"
       TimeoutInMinutes: !Ref TimeoutInMinutes
