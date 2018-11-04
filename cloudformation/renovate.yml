@@ -12,6 +12,17 @@ Parameters:
     Type: String
     Description: Run renovate with flags
 
+  RenovateRepositories:
+    Type: String
+    Description: Comma separated list of repositories
+
+  RenovatePlatform:
+    Type: String
+    Default: github
+    AllowedValues:
+      - github
+      - gitlab
+
   RenovateConfigLocation:
     Type: String
     Default: renovate-aws/config/latest/config.zip
@@ -27,6 +38,10 @@ Parameters:
   BuildSpec:
     Type: String
     Default: buildspec.yml
+
+  TimeoutInMinutes:
+    Type: Number
+    Default: 10
 
   GitHubToken:
     Type: String
@@ -101,11 +116,15 @@ Resources:
         EnvironmentVariables:
           - Name: RENOVATE_VERSION
             Value: !Ref RenovateVersion
+          - Name: RENOVATE_REPOSITORIES
+            Value: !Ref RenovateRepositories
           - Name: RENOVATE_FLAGS
             Value: !Ref RenovateFlags
+          - Name: RENOVATE_PLATFORM
+            Value: !Ref RenovatePlatform
       Source:
         Location: !Ref RenovateConfigLocation
         Type: S3
         BuildSpec: !Ref BuildSpec
-      TimeoutInMinutes: 10
+      TimeoutInMinutes: !Ref TimeoutInMinutes
 

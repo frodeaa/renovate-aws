@@ -1,0 +1,20 @@
+{
+  "name": "renovate-aws-config",
+  "version": "1.0.0",
+  "description": "renovate configuration",
+  "main": "renovate-config.js",
+  "private": true,
+  "scripts": {
+    "test": "node -c renovate-config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/frodeaa/renovate-aws.git"
+  },
+  "author": "Frode Aannevik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/frodeaa/renovate-aws/issues"
+  },
+  "homepage": "https://github.com/frodeaa/renovate-aws#readme"
+}
