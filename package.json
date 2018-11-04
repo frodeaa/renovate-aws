@@ -1,0 +1,23 @@
+{
+  "name": "renovate-aws",
+  "version": "1.0.0",
+  "description": "[![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=renovate&templateURL=https://s3-eu-west-1.amazonaws.com/renovate-aws/cf-template/LATEST/renovate.yml)",
+  "main": "index.js",
+  "dependencies": {
+    "renovate": "^13.118.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frodeaa/renovate-aws.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/frodeaa/renovate-aws/issues"
+  },
+  "homepage": "https://github.com/frodeaa/renovate-aws#readme"
+}
