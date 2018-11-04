@@ -4,31 +4,42 @@ Description: |
   AWS resources for Renovate
 
 Parameters:
-  RenovateCodeBuildName:
-    Type: String
-    Default: renovate
-
   RenovateVersion:
     Type: String
     Default: latest
 
-  RenovateImage:
+  RenovateConfigLocation:
+    Type: String
+    Default: renovate-aws/config/latest/config.zip
+
+  Image:
     Type: String
     Default: aws/codebuild/nodejs:10.1.0
 
-  RenovateComputerType:
+  ComputerType:
     Type: String
     Default: BUILD_GENERAL1_SMALL
 
-  RenovateAwsLocation:
+  BuildSpec:
     Type: String
-    Default: https://github.com/frodeaa/renovate-aws.git
+    Default: buildspec.yml
 
-  RenovateBuildSpec:
+  GitHubToken:
     Type: String
-    Default: renovate-aws/buildspec.yml
+    NoEcho: true
+
+Conditions:
+  HasGitHubToken: {"Fn::Not": [{"Fn::Equals": ["", {"Ref": "GitHubToken"}]}]}
 
 Resources:
+  RenovateGitHubToken:
+    Type: AWS::SSM::Parameter
+    Condition: HasGitHubToken
+    Properties:
+      Type: String
+      Name: /renovate-aws/GITHUB_TOKEN
+      Value: !Ref GitHubToken
+
   RenovateRole:
     Type: AWS::IAM::Role
     Properties:
@@ -39,6 +50,15 @@ Resources:
             Principal:
               Service: codebuild.amazonaws.com
       Policies:
+        - PolicyName: !Sub ${AWS::StackName}-ssm
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameters
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/renovate-aws
+
         - PolicyName: !Sub ${AWS::StackName}-cloudwatch
           PolicyDocument:
             Version: 2012-10-17
@@ -59,16 +79,15 @@ Resources:
       Artifacts:
         Type: NO_ARTIFACTS
       Environment:
-        ComputeType: !Ref RenovateComputerType
-        Image: !Ref RenovateImage
+        ComputeType: !Ref ComputerType
+        Image: !Ref Image
         Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: RENOVATE_VERSION
             Value: !Ref RenovateVersion
       Source:
-        Location: !Ref RenovateAwsLocation
-        Type: GITHUB
-        BuildSpec: !Ref RenovateBuildSpec
-        GitCloneDepth: 0
+        Location: !Ref RenovateConfigLocation
+        Type: S3
+        BuildSpec: !Ref BuildSpec
       TimeoutInMinutes: 10
 
