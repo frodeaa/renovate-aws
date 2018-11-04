@@ -12,6 +12,7 @@ RenovateRepositories | comma separated list of repositories to run against   ||
 RenovateVersion      | renovate version to use                        | latest|
 RenovateFlags        | see `--help` for details about supported flags   ||
 RenovatePlatform     | the platform, requires `GitHubToken` or `GitLabToken` ||
+RenovateSchedule     | schedule the renovate [ScheduleExpressions] |`cron(45 23 ? * 1-5 *)`|
 GitHubToken          | token used when platform is `github`          | NOT_SET|
 GitLabToken          | token used when platform is `gitlab`          | NOT_SET|
 |||
@@ -35,4 +36,5 @@ template or just click the "Launch Stack" button.
 [![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=renovate&templateURL=https://s3-eu-west-1.amazonaws.com/renovate-aws/cf-template/latest/renovate.yml)
 
 [Renovate]: https://github.com/renovatebot/renovate
+[ScheduleExpressions]: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
 [awscli]: https://aws.amazon.com/cli/
