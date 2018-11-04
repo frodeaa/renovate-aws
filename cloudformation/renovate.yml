@@ -117,9 +117,9 @@ Resources:
           - Name: RENOVATE_VERSION
             Value: !Ref RenovateVersion
           - Name: RENOVATE_REPOSITORIES
-            Value: !Ref RenovateRepositories
+            Value: !Sub " ${RenovateRepositories}"
           - Name: RENOVATE_FLAGS
-            Value: !Ref RenovateFlags
+            Value: !Sub " ${RenovateFlags}"
           - Name: RENOVATE_PLATFORM
             Value: !Ref RenovatePlatform
       Source:
