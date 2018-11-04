@@ -8,6 +8,10 @@ Parameters:
     Type: String
     Default: latest
 
+  RenovateFlags:
+    Type: String
+    Description: Run renovate with flags
+
   RenovateConfigLocation:
     Type: String
     Default: renovate-aws/config/latest/config.zip
@@ -31,6 +35,7 @@ Parameters:
     NoEcho: true
 
   GitLabToken:
+    Description: |
     Type: String
     Default: NOT_SET
     MinLength: 1
@@ -96,6 +101,8 @@ Resources:
         EnvironmentVariables:
           - Name: RENOVATE_VERSION
             Value: !Ref RenovateVersion
+          - Name: RENOVATE_FLAGS
+            Value: !Ref RenovateFlags
       Source:
         Location: !Ref RenovateConfigLocation
         Type: S3

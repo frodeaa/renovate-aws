@@ -15,7 +15,7 @@ phases:
       - "$(npm bin)/renovate --version"
   build:
     commands:
-      - "$(npm bin)/renovate"
+      - $(npm bin)/renovate ${RENOVATE_FLAGS}
 
 cache:
   paths:
