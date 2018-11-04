@@ -7,11 +7,11 @@ env:
 phases:
   install:
     commands:
-      - npm install renovate@${RENOVATE_VERSION}
+      - npm --prefix renovate-aws install renovate@${RENOVATE_VERSION}
   build:
     commands:
-      - "$(npm bin)/renovate"
+      - "$(npm --prefix renovate-aws bin)/renovate"
 
 cache:
   paths:
-    - "node_modules/**/*"
+    - "renovate-aws/node_modules/**/*"
