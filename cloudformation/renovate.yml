@@ -89,7 +89,6 @@ Resources:
                 Action:
                   - ssm:GetParameters
                 Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:*
-
         - PolicyName: !Sub ${AWS::StackName}-cloudwatch
           PolicyDocument:
             Version: 2012-10-17
@@ -127,4 +126,3 @@ Resources:
         Type: S3
         BuildSpec: !Ref BuildSpec
       TimeoutInMinutes: !Ref TimeoutInMinutes
-
