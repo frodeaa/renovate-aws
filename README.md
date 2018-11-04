@@ -11,7 +11,7 @@ Parameter            | Description   | Default |
 RenovateRepositories | comma separated list of repositories to run against   ||
 RenovateVersion      | renovate version to use                        | latest|
 RenovateFlags        | see `--help` for details about supported flags   ||
-RenovatePlatform     | the platform, requires `GitHubToken` or `GitLabToken` ||
+RenovatePlatform     | the platform                               |github|
 RenovateSchedule     | schedule the renovate [ScheduleExpressions] |`cron(45 23 ? * 1-5 *)`|
 RenovatePlatformToken| token for the platform (`github` or `gitlab`)         ||
 |||
