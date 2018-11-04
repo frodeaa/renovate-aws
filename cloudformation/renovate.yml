@@ -26,19 +26,30 @@ Parameters:
 
   GitHubToken:
     Type: String
+    Default: NOT_SET
+    MinLength: 1
     NoEcho: true
 
-Conditions:
-  HasGitHubToken: {"Fn::Not": [{"Fn::Equals": ["", {"Ref": "GitHubToken"}]}]}
+  GitLabToken:
+    Type: String
+    Default: NOT_SET
+    MinLength: 1
+    NoEcho: true
 
 Resources:
   RenovateGitHubToken:
     Type: AWS::SSM::Parameter
-    Condition: HasGitHubToken
     Properties:
       Type: String
       Name: /renovate-aws/GITHUB_TOKEN
       Value: !Ref GitHubToken
+
+  RenovateGitLabToken:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Name: /renovate-aws/GITLAB_TOKEN
+      Value: !Ref GitLabToken
 
   RenovateRole:
     Type: AWS::IAM::Role
@@ -57,7 +68,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - ssm:GetParameters
-                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/renovate-aws
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:*
 
         - PolicyName: !Sub ${AWS::StackName}-cloudwatch
           PolicyDocument:

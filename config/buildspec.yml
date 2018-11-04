@@ -4,8 +4,8 @@ env:
   variables:
     CI: "1"
   parameter-store:
-    GITHUB_TOKEN: renovate-aws/GITHUB_TOKEN
-    GITLAB_TOKEN: renovate-aws/GITLAB_TOKEN
+    GITHUB_TOKEN: /renovate-aws/GITHUB_TOKEN
+    GITLAB_TOKEN: /renovate-aws/GITLAB_TOKEN
 
 
 phases:
