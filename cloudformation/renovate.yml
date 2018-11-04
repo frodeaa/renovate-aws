@@ -26,7 +26,7 @@ Parameters:
 
   RenovateBuildSpec:
     Type: String
-    Default: renovate_buildspec.yml
+    Default: renovate-aws/buildspec.yml
 
 Resources:
   RenovateRole:
