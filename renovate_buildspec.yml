@@ -1,10 +1,17 @@
 version: 0.2
 
+env:
+  variables:
+    CI: "1"
+
 phases:
   install:
     commands:
       - npm install renovate@${RENOVATE_VERSION}
+  build:
+    commands:
+      - "$(npm bin)/renovate"
 
 cache:
   paths:
-    - 'node_modules/**/*'
+    - "node_modules/**/*"
