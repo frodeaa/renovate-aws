@@ -1,0 +1,66 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  AWS resources for Renovate
+
+Parameters:
+  RenovateCodeBuildName:
+    Type: String
+    Default: renovate
+
+  RenovateVersion:
+    Type: String
+    Default: LATEST
+
+  RenovateImage:
+    Type: String
+    Default: aws/codebuild/nodejs:10.1.0
+
+  RenovateComputerType:
+    Type: String
+    Default: BUILD_GENERAL1_SMALL
+
+  RenovateAwsLocation:
+    Type: String
+    Default: https://github.com/frodeaa/renovate-aws.git
+
+Resources:
+  RenovateRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-cloudwatch
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGrou
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${RenovateCodeBuildName}:*"
+
+  Renovate:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref RenovateCodeBuildName
+      ServiceRole: !Ref RenovateRole
+      Description: Run Renovate
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        ComputeType: !Ref RenovateComputerType
+        Image: !Ref RenovateImage
+        Type: LINUX_CONTAINER
+      Source:
+        Location: !Ref RenovateAwsLocation
+        Type: GITHUB
+        GitCloneDepth: 0
+      TimeoutInMinutes: 10
+
