@@ -16,6 +16,13 @@ Parameters:
     Type: String
     Description: Comma separated list of repositories
 
+  RenovateSchedule:
+    Type: String
+    Description: |
+      The schedule or rate (frequency) that determines when the renovate
+      will be run
+    Default: cron(45 23 ? * 1-5 *)
+
   RenovatePlatform:
     Type: String
     Default: github
@@ -47,6 +54,9 @@ Parameters:
     Default: NOT_SET
     MinLength: 1
     NoEcho: true
+
+Conditions:
+  HasRenovateSchedule: {"Fn::Not": [{"Fn::Equals": ["", {"Ref": "RenovateSchedule"}]}]}
 
 Resources:
   RenovateGitHubToken:
@@ -90,12 +100,42 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}:*"
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/Renovate-*"
+
+  RenovateCronRuleRole:
+    Type: AWS::IAM::Role
+    Condition: HasRenovateSchedule
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+      Policies:
+        - PolicyName: !Sub ${AWS::StackName}-cron-rule
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/Renovate-*"
+
+  RenovateCronRule:
+    Type: AWS::Events::Rule
+    Condition: HasRenovateSchedule
+    Properties:
+      ScheduleExpression: !Ref RenovateSchedule
+      Targets:
+        - Id: renovate-cron
+          Arn: !GetAtt Renovate.Arn
+          Input: "{}"
+          RoleArn: !GetAtt RenovateCronRuleRole.Arn
 
   Renovate:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Sub ${AWS::StackName}
       ServiceRole: !Ref RenovateRole
       Description: Run Renovate
       Artifacts:
@@ -135,3 +175,10 @@ Resources:
             paths:
               - "node_modules/**/*"
       TimeoutInMinutes: !Ref TimeoutInMinutes
+
+Outputs:
+  Renovate:
+    Value: !Ref Renovate
+
+  RenovateUrl:
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/codebuild/home?region=${AWS::Region}#/projects/${Renovate}/view
