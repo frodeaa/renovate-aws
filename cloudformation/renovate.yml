@@ -45,15 +45,15 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - logs:CreateLogGrou
+                  - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${RenovateCodeBuildName}:*"
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}:*"
 
   Renovate:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: !Ref RenovateCodeBuildName
+      Name: !Sub ${AWS::StackName}
       ServiceRole: !Ref RenovateRole
       Description: Run Renovate
       Artifacts:
