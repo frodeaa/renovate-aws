@@ -4,3 +4,7 @@ phases:
   install:
     commands:
       - npm install renovate@${RENOVATE_VERSION}
+
+cache:
+  paths:
+    - 'node_modules/**/*'
