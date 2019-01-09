@@ -21,7 +21,7 @@ Parameters:
     Description: |
       The schedule or rate (frequency) that determines when the renovate
       will be run
-    Default: cron(45 23 ? * 1-5 *)
+    Default: cron(45 09 ? * 1-5 *)
 
   RenovatePlatform:
     Type: String
