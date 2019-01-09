@@ -82,7 +82,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - ssm:GetParameters
-                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:*
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:/renovate-aws/platform_token
         - PolicyName: !Sub ${AWS::StackName}-cloudwatch
           PolicyDocument:
             Version: 2012-10-17
