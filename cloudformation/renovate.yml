@@ -82,7 +82,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - ssm:GetParameters
-                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:*
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/renovate-aws/platform_token
         - PolicyName: !Sub ${AWS::StackName}-cloudwatch
           PolicyDocument:
             Version: 2012-10-17
@@ -92,7 +92,7 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/Renovate-*"
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/Renovate-*
 
   RenovateCronRuleRole:
     Type: AWS::IAM::Role
@@ -112,7 +112,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:project/Renovate-*"
+                Resource: !Sub arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/Renovate-*
 
   RenovateCronRule:
     Type: AWS::Events::Rule
