@@ -112,7 +112,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
-                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:project/Renovate-*"
+                Resource: !Sub arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/Renovate-*
 
   RenovateCronRule:
     Type: AWS::Events::Rule
