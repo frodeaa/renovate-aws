@@ -37,7 +37,7 @@ Parameters:
 
   Image:
     Type: String
-    Default: aws/codebuild/nodejs:10.1.0
+    Default: aws/codebuild/standard:2.0
 
   ComputerType:
     Type: String
@@ -136,6 +136,7 @@ Resources:
         ComputeType: !Ref ComputerType
         Image: !Ref Image
         Type: LINUX_CONTAINER
+        PrivilegedMode: true
         EnvironmentVariables:
           - Name: RENOVATE_VERSION
             Value: !Ref RenovateVersion
@@ -166,14 +167,21 @@ Resources:
                     - /renovate-aws/platform_token
                 - "\n"
             - |
+                Cache:
+                  Type: LOCAL
+                  Modes:
+                    - LOCAL_DOCKER_LAYER_CACHE
                 phases:
                   install:
+                    runtime-versions:
+                      docker: 18
                     commands:
-                      - npm install renovate@${RENOVATE_VERSION}
-                      - "$(npm bin)/renovate --version"
+                      - docker pull renovate/renovate:${RENOVATE_VERSION}
+                      - env > host.env
                   build:
                     commands:
-                      - $(npm bin)/renovate ${RENOVATE_FLAGS}
+                      - docker run --env-file ./host.env renovate/renovate:${RENOVATE_VERSION}
+
       TimeoutInMinutes: !Ref TimeoutInMinutes
 
 Outputs:
